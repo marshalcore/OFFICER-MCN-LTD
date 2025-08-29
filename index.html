@@ -1,0 +1,1017 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Marshal Core | Officer Portal</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="stylesheet" href="assets/css/styles.css">
+  <link rel="stylesheet" href="assets/css/auth.css">
+  <link rel="stylesheet" href="assets/css/dashboard.css">
+  <style>
+    /* Additional styles for OTP verification */
+    .otp-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin: 15px 0;
+    }
+    .otp-input {
+      width: 40px;
+      height: 40px;
+      text-align: center;
+      font-size: 18px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .resend-otp {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 14px;
+    }
+    .resend-otp a {
+      color: #007bff;
+      cursor: pointer;
+    }
+    .countdown {
+      color: #6c757d;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+
+<header class="header-container">
+  <div class="header-logo">
+    <img src="assets/images/logo.png" alt="Marshal Core Logo">
+  </div>
+  <div class="header-rc">
+    RC: 8405988
+  </div>
+  <div class="header-title">
+    Marshal Core Officer Portal
+  </div>
+</header>
+
+<!-- SIGNUP SECTION -->
+<section class="layout_padding section-container" id="signupSection">
+  <div class="container">
+    <div class="auth-form-container">
+      <h2>Officer Sign Up</h2>
+      <form id="signupForm">
+        <input type="text" name="unique_id" placeholder="Unique ID" required />
+        <input type="email" name="email" placeholder="Email" required />
+        <input type="tel" name="phone" placeholder="Phone Number" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <button type="submit">Create Account</button>
+      </form>
+      <div class="auth-nav">
+        Already have an account? <a href="#" id="showLoginLink">Log In</a>
+      </div>
+      <div id="signupError" class="error-message"></div>
+      <div id="signupSuccess" class="success-message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- OTP VERIFICATION SECTION -->
+<section class="layout_padding section-container" id="otpSection">
+  <div class="container">
+    <div class="auth-form-container">
+      <h2>Verify Your Email</h2>
+      <p style="text-align: center; margin-bottom: 20px;">We've sent a 6-digit verification code to your email</p>
+      
+      <form id="otpForm">
+        <input type="hidden" id="otpEmail" name="email">
+        <input type="hidden" id="otpUniqueId" name="unique_id">
+        <input type="hidden" id="otpPhone" name="phone">
+        <input type="hidden" id="otpPassword" name="password">
+        
+        <div class="otp-container">
+          <input type="text" class="otp-input" maxlength="1" data-index="1" autocomplete="off">
+          <input type="text" class="otp-input" maxlength="1" data-index="2" autocomplete="off">
+          <input type="text" class="otp-input" maxlength="1" data-index="3" autocomplete="off">
+          <input type="text" class="otp-input" maxlength="1" data-index="4" autocomplete="off">
+          <input type="text" class="otp-input" maxlength="1" data-index="5" autocomplete="off">
+          <input type="text" class="otp-input" maxlength="1" data-index="6" autocomplete="off">
+        </div>
+        
+        <input type="hidden" id="fullOtp" name="code" required>
+        
+        <button type="submit" id="verifyOtpBtn">Verify Code</button>
+      </form>
+      
+      <div class="resend-otp">
+        <p>Didn't receive the code? <a href="#" id="resendOtpLink">Resend code</a></p>
+        <p class="countdown" id="resendCountdown"></p>
+      </div>
+      
+      <div class="auth-nav">
+        <a href="#" id="backToSignupLink">Back to Sign Up</a>
+      </div>
+      
+      <div id="otpError" class="error-message"></div>
+      <div id="otpSuccess" class="success-message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- LOGIN SECTION -->
+<section class="layout_padding section-container active-section" id="loginSection">
+  <div class="container">
+    <div class="auth-form-container">
+      <h2>Officer Log In</h2>
+      <form id="loginForm">
+        <input type="text" name="unique_id" placeholder="Unique ID" required />
+        <input type="password" name="password" placeholder="Password" required />
+        <button type="submit">Log In</button>
+      </form>
+      <div class="auth-nav">
+        Don't have an account? <a href="#" id="showSignupLink">Sign Up</a> | 
+        <a href="#" id="showForgotPasswordLink">Forgot Password?</a>
+      </div>
+      <div id="loginError" class="error-message"></div>
+      <div id="loginSuccess" class="success-message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- FORGOT PASSWORD SECTION -->
+<section class="layout_padding section-container" id="forgotPasswordSection">
+  <div class="container">
+    <div class="auth-form-container">
+      <h2>Forgot Password</h2>
+      <form id="forgotPasswordForm">
+        <input type="email" name="email" placeholder="Registered Email" required />
+        <button type="submit">Send Reset Code</button>
+      </form>
+      <div class="auth-nav">
+        Remember your password? <a href="#" id="showLoginLink2">Log In</a>
+      </div>
+      <div id="forgotPasswordError" class="error-message"></div>
+      <div id="forgotPasswordSuccess" class="success-message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- RESET PASSWORD SECTION -->
+<section class="layout_padding section-container" id="resetPasswordSection">
+  <div class="container">
+    <div class="auth-form-container">
+      <h2>Reset Password</h2>
+      <form id="resetPasswordForm">
+        <input type="email" name="email" placeholder="Registered Email" required />
+        <input type="text" name="code" placeholder="6-digit Code" required />
+        <input type="password" name="new_password" placeholder="New Password" required />
+        <button type="submit">Reset Password</button>
+      </form>
+      <div class="auth-nav">
+        <a href="#" id="showLoginLink3">Back to Log In</a>
+      </div>
+      <div id="resetPasswordError" class="error-message"></div>
+      <div id="resetPasswordSuccess" class="success-message"></div>
+    </div>
+  </div>
+</section>
+
+<!-- DASHBOARD SECTION -->
+<section class="layout_padding section-container" id="dashboardSection">
+  <div class="container dashboard-container">
+    <div class="dashboard-header">
+      <h2>Officer Dashboard</h2>
+      <div class="profile-picture-container">
+        <img id="profilePicture" class="profile-picture" src="/images/default-profile.png" alt="Profile Picture">
+        <div class="upload-btn-wrapper">
+          <button class="upload-btn">Change Photo</button>
+          <input type="file" id="profilePictureUpload" accept="image/*">
+        </div>
+      </div>
+    </div>
+    
+    <div class="dashboard-grid">
+      <div class="info-section">
+        <h3>Personal Information</h3>
+        <div id="personalInfo"></div>
+      </div>
+      
+      <div class="info-section">
+        <h3>Contact Information</h3>
+        <div id="contactInfo"></div>
+      </div>
+      
+      <div class="info-section">
+        <h3>Additional Information</h3>
+        <div id="additionalInfo"></div>
+      </div>
+      
+      <div class="info-section">
+        <h3>Banking Information</h3>
+        <div id="bankingInfo"></div>
+      </div>
+    </div>
+    
+    <div class="applicant-data">
+      <h3>Assigned Applicant Information</h3>
+      <div id="applicantInfo"></div>
+    </div>
+    
+    <button id="logoutBtn" class="logout-btn">Log Out</button>
+  </div>
+</section>
+
+<footer class="footer_section">
+  <div class="container">
+    <p>&copy; 2025 Marshal Core Of Nigeria Limited. <br>All rights reserved.</p>
+  </div>
+</footer>
+
+<div class="page-loader" id="pageLoader">Loading...</div>
+
+<script>
+// Configuration
+const API_BASE_URL = 'http://localhost:8000';
+const DEFAULT_PROFILE_IMAGE = '/images/default-profile.png';
+
+// DOM Elements
+const pageLoader = document.getElementById('pageLoader');
+const signupForm = document.getElementById('signupForm');
+const otpForm = document.getElementById('otpForm');
+const loginForm = document.getElementById('loginForm');
+const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+const resetPasswordForm = document.getElementById('resetPasswordForm');
+const logoutBtn = document.getElementById('logoutBtn');
+const profilePictureUpload = document.getElementById('profilePictureUpload');
+const otpInputs = document.querySelectorAll('.otp-input');
+const fullOtpInput = document.getElementById('fullOtp');
+const resendOtpLink = document.getElementById('resendOtpLink');
+const resendCountdown = document.getElementById('resendCountdown');
+
+// Dashboard elements
+const personalInfo = document.getElementById('personalInfo');
+const contactInfo = document.getElementById('contactInfo');
+const additionalInfo = document.getElementById('additionalInfo');
+const bankingInfo = document.getElementById('bankingInfo');
+const applicantInfo = document.getElementById('applicantInfo');
+
+// OTP variables
+let otpResendTimer = null;
+let otpResendTimeLeft = 60;
+
+// Utility Functions
+function showLoader() {
+  pageLoader.style.display = "flex";
+}
+
+function hideLoader() {
+  pageLoader.style.display = "none";
+}
+
+function showSection(sectionId) {
+  document.querySelectorAll('.section-container').forEach(section => {
+    section.classList.remove('active-section');
+  });
+  document.getElementById(sectionId).classList.add('active-section');
+  window.scrollTo(0, 0);
+  clearAllMessages();
+}
+
+function clearAllMessages() {
+  document.querySelectorAll('.error-message, .success-message').forEach(el => {
+    el.textContent = '';
+  });
+}
+
+function clearAllForms() {
+  document.querySelectorAll('form').forEach(form => form.reset());
+}
+
+function clearAuthData() {
+  localStorage.removeItem('officerToken');
+  localStorage.removeItem('refreshToken');
+  localStorage.removeItem('officerUniqueId');
+}
+
+// OTP Functions
+function setupOtpInputs() {
+  otpInputs.forEach((input, index) => {
+    input.addEventListener('input', (e) => {
+      const value = e.target.value;
+      
+      // Move to next input if current input has value
+      if (value && index < otpInputs.length - 1) {
+        otpInputs[index + 1].focus();
+      }
+      
+      updateFullOtp();
+    });
+    
+    input.addEventListener('keydown', (e) => {
+      // Move to previous input on backspace if current input is empty
+      if (e.key === 'Backspace' && !e.target.value && index > 0) {
+        otpInputs[index - 1].focus();
+      }
+      
+      updateFullOtp();
+    });
+    
+    input.addEventListener('paste', (e) => {
+      e.preventDefault();
+      const pasteData = e.clipboardData.getData('text').slice(0, 6);
+      
+      // Fill all inputs with pasted data
+      pasteData.split('').forEach((char, i) => {
+        if (otpInputs[i]) {
+          otpInputs[i].value = char;
+        }
+      });
+      
+      // Focus on the next empty input or the last one
+      const nextEmptyIndex = pasteData.length < 6 ? pasteData.length : 5;
+      if (otpInputs[nextEmptyIndex]) {
+        otpInputs[nextEmptyIndex].focus();
+      }
+      
+      updateFullOtp();
+    });
+  });
+}
+
+function updateFullOtp() {
+  const otpCode = Array.from(otpInputs).map(input => input.value).join('');
+  fullOtpInput.value = otpCode;
+}
+
+function clearOtpInputs() {
+  otpInputs.forEach(input => {
+    input.value = '';
+  });
+  updateFullOtp();
+}
+
+function startOtpResendTimer() {
+  // Clear any existing timer
+  if (otpResendTimer) {
+    clearInterval(otpResendTimer);
+  }
+  
+  otpResendTimeLeft = 60;
+  resendOtpLink.style.pointerEvents = 'none';
+  resendOtpLink.style.opacity = '0.5';
+  
+  updateResendCountdown();
+  
+  otpResendTimer = setInterval(() => {
+    otpResendTimeLeft--;
+    updateResendCountdown();
+    
+    if (otpResendTimeLeft <= 0) {
+      clearInterval(otpResendTimer);
+      resendOtpLink.style.pointerEvents = 'auto';
+      resendOtpLink.style.opacity = '1';
+      resendCountdown.textContent = '';
+    }
+  }, 1000);
+}
+
+function updateResendCountdown() {
+  resendCountdown.textContent = `Resend available in ${otpResendTimeLeft} seconds`;
+}
+
+// API Functions
+async function validateToken(token) {
+  if (!token) return false;
+  try {
+    const response = await fetch(`${API_BASE_URL}/officer/validate-token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
+      body: JSON.stringify({ token })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error('Token validation error:', errorData);
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Token validation failed:', error);
+    return false;
+  }
+}
+
+async function refreshAccessToken() {
+  const refreshToken = localStorage.getItem('refreshToken');
+  if (!refreshToken) return null;
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/officer/refresh-token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ refresh_token: refreshToken })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to refresh token');
+    }
+    
+    const data = await response.json();
+    return data.access_token;
+  } catch (error) {
+    console.error('Token refresh failed:', error);
+    return null;
+  }
+}
+
+async function officerSignup(formData) {
+  showLoader();
+  try {
+    const response = await fetch(`${API_BASE_URL}/officer/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.detail || 'Signup failed');
+    }
+
+    // Clear any previous errors
+    document.getElementById('signupError').textContent = '';
+    
+    // If OTP is required, show OTP section
+    if (data.status === 'otp_required') {
+      // Store form data in OTP section hidden fields
+      document.getElementById('otpEmail').value = formData.email;
+      document.getElementById('otpUniqueId').value = formData.unique_id;
+      document.getElementById('otpPhone').value = formData.phone;
+      document.getElementById('otpPassword').value = formData.password;
+      
+      // Show OTP section
+      showSection('otpSection');
+      
+      // Start resend timer
+      startOtpResendTimer();
+      
+      // Display success message
+      document.getElementById('otpSuccess').textContent = data.message || 'OTP sent to your email';
+    } else {
+      // If no OTP required (shouldn't happen with current API), proceed to success
+      document.getElementById('signupSuccess').textContent = data.message || 'Account created successfully!';
+      setTimeout(() => {
+        showSection('loginSection');
+      }, 3000);
+    }
+
+  } catch (error) {
+    const errorElement = document.getElementById('signupError');
+    errorElement.textContent = error.message || 'Signup failed';
+    errorElement.style.color = 'red';
+    console.error('Signup error:', error);
+  } finally {
+    hideLoader();
+  }
+}
+
+async function verifyOtp(formData) {
+  showLoader();
+  try {
+    const response = await fetch(`${API_BASE_URL}/officer/verify-signup-otp`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: formData.email,
+        code: formData.code,
+        purpose: 'officer_signup'
+      })
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.detail || 'OTP verification failed');
+    }
+
+    // If OTP verification is successful, complete the signup
+    if (data.status === 'success') {
+      await completeOfficerSignup({
+        unique_id: formData.unique_id,
+        email: formData.email,
+        phone: formData.phone,
+        password: formData.password
+      });
+    } else {
+      throw new Error(data.message || 'OTP verification failed');
+    }
+
+  } catch (error) {
+    const errorElement = document.getElementById('otpError');
+    errorElement.textContent = error.message || 'OTP verification failed';
+    errorElement.style.color = 'red';
+    console.error('OTP verification error:', error);
+    hideLoader();
+  }
+}
+
+async function completeOfficerSignup(formData) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/officer/complete-signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.detail || 'Signup completion failed');
+    }
+
+    // Display success message
+    document.getElementById('otpSuccess').textContent = data.message || 'Account created successfully!';
+    
+    // Clear OTP inputs
+    clearOtpInputs();
+    
+    // Redirect to login after delay
+    setTimeout(() => {
+      showSection('loginSection');
+    }, 3000);
+
+  } catch (error) {
+    const errorElement = document.getElementById('otpError');
+    errorElement.textContent = error.message || 'Signup completion failed';
+    errorElement.style.color = 'red';
+    console.error('Signup completion error:', error);
+  } finally {
+    hideLoader();
+  }
+}
+
+async function resendOtp() {
+  showLoader();
+  try {
+    const email = document.getElementById('otpEmail').value;
+    
+    // Use the same signup endpoint to resend OTP
+    const response = await fetch(`${API_BASE_URL}/officer/signup`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        unique_id: document.getElementById('otpUniqueId').value,
+        email: email,
+        phone: document.getElementById('otpPhone').value,
+        password: document.getElementById('otpPassword').value
+      })
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      throw new Error(data.detail || 'Failed to resend OTP');
+    }
+
+    // Show success message
+    document.getElementById('otpSuccess').textContent = 'OTP resent to your email';
+    
+    // Restart the resend timer
+    startOtpResendTimer();
+
+  } catch (error) {
+    document.getElementById('otpError').textContent = error.message || 'Failed to resend OTP';
+    console.error('Resend OTP error:', error);
+  } finally {
+    hideLoader();
+  }
+}
+
+async function officerLogin(formData) {
+  showLoader();
+  try {
+    const response = await fetch(`${API_BASE_URL}/officer/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      if (response.status === 401) {
+        throw new Error('Invalid credentials. Please check your Unique ID and password.');
+      }
+      throw new Error(data.detail || 'Login failed');
+    }
+
+    if (data.access_token) {
+      localStorage.setItem('officerToken', data.access_token);
+      localStorage.setItem('officerUniqueId', formData.unique_id);
+      if (data.refresh_token) {
+        localStorage.setItem('refreshToken', data.refresh_token);
+      }
+    } else {
+      throw new Error('No authentication token received');
+    }
+
+    await fetchDashboardData();
+
+  } catch (error) {
+    document.getElementById('loginError').textContent = error.message || 'Login failed';
+    console.error('Login error:', error);
+    hideLoader();
+  }
+}
+
+async function forgotPassword(email) {
+  showLoader();
+  try {
+    const response = await fetch(`${API_BASE_URL}/officer/forgot-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      // Handle validation errors
+      if (response.status === 422) {
+        if (data.detail && Array.isArray(data.detail)) {
+          const errorMessages = data.detail.map(err => {
+            return `${err.loc ? err.loc.join('.') + ': ' : ''}${err.msg}`;
+          }).join('; ');
+          throw new Error(errorMessages);
+        } else if (data.detail) {
+          throw new Error(data.detail);
+        }
+      }
+      throw new Error(data.message || 'Failed to send reset code');
+    }
+
+    document.getElementById('forgotPasswordSuccess').textContent = 
+      data.message || 'Reset code sent to your email. Please check your inbox.';
+    resetPasswordForm.email.value = email;
+    showSection('resetPasswordSection');
+
+  } catch (error) {
+    document.getElementById('forgotPasswordError').textContent = 
+      typeof error.message === 'string' ? error.message : 'Failed to process request';
+    console.error('Forgot password error:', error);
+  } finally {
+    hideLoader();
+  }
+}
+
+async function resetPassword(formData) {
+  showLoader();
+  try {
+    const response = await fetch(`${API_BASE_URL}/officer/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData)
+    });
+
+    const data = await response.json();
+    
+    if (!response.ok) {
+      // Handle validation errors
+      if (response.status === 422) {
+        if (data.detail && Array.isArray(data.detail)) {
+          const errorMessages = data.detail.map(err => {
+            return `${err.loc ? err.loc.join('.') + ': ' : ''}${err.msg}`;
+          }).join('; ');
+          throw new Error(errorMessages);
+        } else if (data.detail) {
+          throw new Error(data.detail);
+        }
+      }
+      throw new Error(data.detail || 'Password reset failed');
+    }
+
+    document.getElementById('resetPasswordSuccess').textContent = 
+      data.message || 'Password reset successfully. Please log in.';
+    setTimeout(() => {
+      showSection('loginSection');
+    }, 2000);
+
+  } catch (error) {
+    document.getElementById('resetPasswordError').textContent = 
+      typeof error.message === 'string' ? error.message : 'Reset failed';
+    console.error('Reset password error:', error);
+  } finally {
+    hideLoader();
+  }
+}
+
+async function fetchDashboardData() {
+  try {
+    let token = localStorage.getItem('officerToken');
+    if (!token) throw new Error('No authentication token');
+    
+    // First validate the token
+    const isTokenValid = await validateToken(token);
+    if (!isTokenValid) {
+      // Token invalid, try to refresh
+      const newToken = await refreshAccessToken();
+      if (!newToken) throw new Error('Session expired');
+      
+      localStorage.setItem('officerToken', newToken);
+      token = newToken;
+    }
+
+    // Now fetch dashboard data with valid token
+    const dashboardResponse = await fetch(`${API_BASE_URL}/officer/dashboard`, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
+    });
+    
+    if (!dashboardResponse.ok) throw new Error('Failed to load dashboard');
+    const dashboardData = await dashboardResponse.json();
+
+    displayDashboardData(dashboardData);
+    showSection('dashboardSection');
+    
+  } catch (error) {
+    hideLoader();
+    clearAuthData();
+    showSection('loginSection');
+    document.getElementById('loginError').textContent = error.message;
+    console.error('Dashboard error:', error);
+  }
+}
+
+function displayDashboardData(dashboardData) {
+  hideLoader();
+  
+  // Display personal info
+  personalInfo.innerHTML = `
+    <p><strong>Full Name:</strong> ${dashboardData.full_name || 'Not provided'}</p>
+    <p><strong>NIN Number:</strong> ${dashboardData.nin_number || 'Not provided'}</p>
+    <p><strong>Gender:</strong> ${dashboardData.gender || 'Not provided'}</p>
+    <p><strong>Rank:</strong> ${dashboardData.rank || 'Not provided'}</p>
+    <p><strong>Position:</strong> ${dashboardData.position || 'Not provided'}</p>
+    <p><strong>Date of Birth:</strong> ${dashboardData.date_of_birth ? new Date(dashboardData.date_of_birth).toLocaleDateString() : 'Not provided'}</p>
+    <p><strong>Nationality:</strong> ${dashboardData.nationality || 'Not provided'}</p>
+    <p><strong>State of Origin:</strong> ${dashboardData.state_of_origin || 'Not provided'}</p>
+    <p><strong>LGA of Origin:</strong> ${dashboardData.local_government_origin || 'Not provided'}</p>
+  `;
+  
+  // Display contact info
+  contactInfo.innerHTML = `
+    <p><strong>Email:</strong> ${dashboardData.email}</p>
+    <p><strong>Phone:</strong> ${dashboardData.phone}</p>
+    <p><strong>Address:</strong> ${dashboardData.residential_address || 'Not provided'}</p>
+    <p><strong>State of Residence:</strong> ${dashboardData.state_of_residence || 'Not provided'}</p>
+    <p><strong>LGA of Residence:</strong> ${dashboardData.local_government_residence || 'Not provided'}</p>
+  `;
+  
+  // Display additional info
+  additionalInfo.innerHTML = `
+    <p><strong>Religion:</strong> ${dashboardData.religion || 'Not provided'}</p>
+    <p><strong>Marital Status:</strong> ${dashboardData.marital_status || 'Not provided'}</p>
+    <p><strong>Additional Skills:</strong> ${dashboardData.additional_skills || 'Not provided'}</p>
+    <p><strong>Notes:</strong> ${dashboardData.notes || 'None'}</p>
+  `;
+  
+  // Display banking info
+  bankingInfo.innerHTML = `
+    <p><strong>Bank Name:</strong> ${dashboardData.bank_name || 'Not provided'}</p>
+    <p><strong>Account Number:</strong> ${dashboardData.account_number || 'Not provided'}</p>
+  `;
+
+  // Display profile picture
+  const profilePicture = document.getElementById('profilePicture');
+  if (dashboardData.passport) {
+    try {
+      let pictureUrl = dashboardData.passport;
+      if (!pictureUrl.startsWith('http') && !pictureUrl.startsWith('/')) {
+        pictureUrl = `${API_BASE_URL}/${pictureUrl}`;
+      }
+      
+      const timestamp = new Date().getTime();
+      profilePicture.src = `${pictureUrl}?t=${timestamp}`;
+      
+      profilePicture.onerror = () => {
+        console.error('Failed to load profile picture:', pictureUrl);
+        profilePicture.src = DEFAULT_PROFILE_IMAGE;
+      };
+    } catch (error) {
+      console.error('Error setting profile picture:', error);
+      profilePicture.src = DEFAULT_PROFILE_IMAGE;
+    }
+  } else {
+    profilePicture.src = DEFAULT_PROFILE_IMAGE;
+  }
+
+  // Display applicant data if available
+  if (dashboardData.applicant_data) {
+    const applicant = dashboardData.applicant_data;
+    applicantInfo.innerHTML = `
+      <p><strong>Full Name:</strong> ${applicant.full_name}</p>
+      <p><strong>Email:</strong> ${applicant.email}</p>
+      <p><strong>Phone:</strong> ${applicant.phone_number}</p>
+      <p><strong>NIN:</strong> ${applicant.nin_number}</p>
+      <p><strong>Gender:</strong> ${applicant.gender}</p>
+      <p><strong>Date of Birth:</strong> ${new Date(applicant.date_of_birth).toLocaleDateString()}</p>
+      <p><strong>Address:</strong> ${applicant.residential_address}</p>
+      <p><strong>State:</strong> ${applicant.state_of_residence}</p>
+      <p><strong>LGA:</strong> ${applicant.local_government_residence}</p>
+      ${applicant.additional_skills ? `<p><strong>Skills:</strong> ${applicant.additional_skills}</p>` : ''}
+    `;
+  } else {
+    applicantInfo.innerHTML = '<p>No assigned applicant information available.</p>';
+  }
+}
+
+// Event Listeners
+document.addEventListener('DOMContentLoaded', () => {
+  // Setup OTP inputs
+  setupOtpInputs();
+  
+  // Navigation links
+  document.getElementById('showLoginLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    showSection('loginSection');
+  });
+
+  document.getElementById('backToSignupLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    showSection('signupSection');
+  });
+
+  document.getElementById('showSignupLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    showSection('signupSection');
+  });
+
+  document.getElementById('showForgotPasswordLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    showSection('forgotPasswordSection');
+  });
+
+  document.getElementById('showLoginLink2').addEventListener('click', (e) => {
+    e.preventDefault();
+    showSection('loginSection');
+  });
+
+  document.getElementById('showLoginLink3').addEventListener('click', (e) => {
+    e.preventDefault();
+    showSection('loginSection');
+  });
+
+  // Resend OTP link
+  resendOtpLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    if (otpResendTimeLeft <= 0) {
+      resendOtp();
+    }
+  });
+
+  logoutBtn.addEventListener('click', () => {
+    clearAuthData();
+    clearAllForms();
+    showSection('loginSection');
+  });
+
+  // Form submissions
+  signupForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = {
+      unique_id: signupForm.unique_id.value,
+      email: signupForm.email.value,
+      phone: signupForm.phone.value,
+      password: signupForm.password.value
+    };
+    await officerSignup(formData);
+  });
+
+  otpForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = {
+      email: document.getElementById('otpEmail').value,
+      unique_id: document.getElementById('otpUniqueId').value,
+      phone: document.getElementById('otpPhone').value,
+      password: document.getElementById('otpPassword').value,
+      code: document.getElementById('fullOtp').value
+    };
+    await verifyOtp(formData);
+  });
+
+  loginForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = {
+      unique_id: loginForm.unique_id.value,
+      password: loginForm.password.value
+    };
+    await officerLogin(formData);
+  });
+
+  forgotPasswordForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = forgotPasswordForm.email.value.trim();
+    await forgotPassword(email);
+  });
+
+  resetPasswordForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const formData = {
+      email: resetPasswordForm.email.value,
+      code: resetPasswordForm.code.value,
+      new_password: resetPasswordForm.new_password.value
+    };
+    await resetPassword(formData);
+  });
+
+  // Handle profile picture upload
+  profilePictureUpload.addEventListener('change', async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const token = localStorage.getItem('officerToken');
+    if (!token) {
+      alert('Please log in again');
+      return;
+    }
+
+    if (file.size > 2 * 1024 * 1024) {
+      alert('File size must be less than 2MB');
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('file_type', 'passport');
+
+    try {
+      showLoader();
+      const response = await fetch(`${API_BASE_URL}/officer/upload`, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        },
+        body: formData
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.detail || 'Upload failed');
+      }
+
+      // Refresh dashboard after upload
+      await fetchDashboardData();
+      
+    } catch (error) {
+      hideLoader();
+      alert(error.message || 'Upload failed');
+      console.error('Upload error:', error);
+    }
+  });
+
+  // Check auth status on page load
+  const token = localStorage.getItem('officerToken');
+  if (token) {
+    fetchDashboardData();
+  } else {
+    showSection('loginSection');
+  }
+
+  // Auto-refresh token every 25 minutes
+  setInterval(async () => {
+    const token = localStorage.getItem('officerToken');
+    if (!token) return;
+    
+    try {
+      const newToken = await refreshAccessToken();
+      if (newToken) {
+        localStorage.setItem('officerToken', newToken);
+      }
+    } catch (error) {
+      console.log('Token refresh failed', error);
+    }
+  }, 25 * 60 * 1000); // 25 minutes
+});
+</script>
+</body>
+</html>

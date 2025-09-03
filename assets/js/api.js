@@ -1,6 +1,7 @@
 import { showLoader, hideLoader } from './utils.js';
 
-const API_BASE_URL = 'https://marshalcore-backend.onrender.com';
+// CORRECTED: Use your actual Render backend URL
+const API_BASE_URL = 'https://backend-mcn-ltd.onrender.com';
 
 async function validateToken(token) {
   if (!token) return false;
@@ -205,6 +206,28 @@ async function uploadOfficerDocument(token, formData) {
     
     if (!response.ok) {
       throw new Error('Upload failed');
+    }
+    
+    return await response.json();
+  } catch (error) {
+    throw error;
+  }
+}
+
+// Note: refreshAccessToken function was referenced but not defined in your original code
+// I've added a basic implementation below - update it according to your backend endpoint
+async function refreshAccessToken(refreshToken) {
+  try {
+    const response = await fetch(`${API_BASE_URL}/officer/refresh-token`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ refresh_token: refreshToken })
+    });
+    
+    if (!response.ok) {
+      throw new Error('Failed to refresh token');
     }
     
     return await response.json();
